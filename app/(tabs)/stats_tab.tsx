@@ -5,13 +5,13 @@ import { Text, View } from '@/components/Themed';
 
 import { BarChart, LineChart, lineDataItem } from 'react-native-gifted-charts';
 
-export default function TabThreeScreen() {
+export default function TabStatsScreen() {
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab Threes</Text>
+      <Text style={styles.title}>Stats Tab</Text>
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <BarChart data={barData} />
-      <EditScreenInfo path="app/(tabs)/three.tsx" />
+      <LineChart data={barData} />
+      <EditScreenInfo path="app/(tabs)/stats_tab.tsx" />
     </View>
   );
 }

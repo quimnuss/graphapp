@@ -8,15 +8,32 @@ import {DateTimePickerAndroid, DateTimePicker} from '@react-native-community/dat
 import Slider from '@react-native-community/slider';
 import SliderText from 'react-native-slider-text';
 
+import * as SecureStore from 'expo-secure-store';
+
+async function save(adate : Date, value) {
+  let key : string = adate.toDateString().replace(/\s/g, "_");
+  await SecureStore.setItemAsync(key, value.toString());
+  console.log('saved ' + key + ' ' + value.toString());
+}
+
+async function getValueFor(adate) {
+  let key : string = adate.toDateString().replace(/\s/g, "_");
+  let result = await SecureStore.getItemAsync(key);
+  let anumber = result?.toString()
+  return result !== null ? anumber : "?";
+}
+
+
 export default function TabTwoScreen() {
   const [sliderValue, setSliderValue] = useState(0);
-
 
   const [date, setDate] = useState(new Date());
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
     setDate(currentDate);
+    let value = getValueFor(selectedDate);
+    setSliderValue(value);
   };
 
   const showMode = (currentMode) => {
@@ -30,6 +47,12 @@ export default function TabTwoScreen() {
 
   const showDatepicker = () => {
     showMode('date');
+  };
+
+  const handleNumberChange = (text) => {
+    setSliderValue(text);
+    save(date, text);
+    getValueFor(date);
   };
 
 
@@ -55,10 +78,11 @@ export default function TabTwoScreen() {
         stepValue={0.01}
         minimumValueLabel="35"
         maximumValueLabel="40"
-        onValueChange={(id) => setSliderValue(id)}
+        onValueChange={(id) => handleNumberChange(id)}
         sliderValue={sliderValue}
       />
       <SafeAreaView>
+        <Text>{sliderValue} ºC</Text>
         <Button onPress={showDatepicker} title={date.toLocaleDateString()} />
       </SafeAreaView>
 

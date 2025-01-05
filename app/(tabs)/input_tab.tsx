@@ -73,11 +73,11 @@ export default function TabTwoScreen() {
         minimumTrackTintColor="#000"
         thumbTintColor="#000"
         maximumTrackTintColor="#099"
-        minimumValue={35.00}
-        maximumValue={40.00}
+        minimumValue={36.00}
+        maximumValue={38.00}
         stepValue={0.01}
-        minimumValueLabel="35"
-        maximumValueLabel="40"
+        minimumValueLabel="36"
+        maximumValueLabel="38"
         onValueChange={(id) => handleNumberChange(id)}
         sliderValue={sliderValue}
       />

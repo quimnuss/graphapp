@@ -5,6 +5,8 @@ an app about a graph
 
 - [ ] load stored data to graph
 - [ ] Fix slider label position
+- [ ] Add input to mark down day
+- [ ] Gradient stop on an arbitrary number
 
 ## Next
 

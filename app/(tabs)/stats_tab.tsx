@@ -8,7 +8,7 @@ import {
   FlatList
 } from 'react-native';
 
-import {subDays} from 'date-fns'; 
+import { addDays, subDays } from 'date-fns'; 
 
 import EditScreenInfo from '@/components/EditScreenInfo';
 import { Text, View } from '@/components/Themed';
@@ -29,14 +29,14 @@ const getDatesInRange = (startDate : Date, endDate : Date) => {
 
 async function getValuesForRange(startDate: Date, endDate : Date) {
   const data = [];
-  console.log(startDate.toDateString() + " - " + endDate.toDateString());
+  console.log('retrieving: ' + startDate.toDateString() + " - " + endDate.toDateString());
   let keys = getDatesInRange(startDate, endDate);
   for (let key of keys) {
     let result = await SecureStore.getItemAsync(key);
     if (result) {
       let value = result !== null ? result.toString() : "?";
       let day_number = new Date(key.replace(/_/g, ' ')).getDate();
-      data.push({label : day_number, value : parseFloat(value)});
+      data.push({"label" : day_number, "value" : parseFloat(value)});
     } else {
       console.log('result for ' + key + ' is null')
     }
@@ -64,10 +64,12 @@ export default function TabStatsScreen() {
   const getLastWeek = async () => {
     let now : Date = new Date();
     let startdate : Date = subDays(now, 7);
-    let last_week_data = await getValuesForRange(startdate, now);
-    console.log('retrieved ' + JSON.stringify(last_week_data));
+    let enddate : Date = addDays(now, 7);
+    let week_data = []
+    week_data = await getValuesForRange(startdate, enddate);
     setRefreshing(false);
-    setChartData(last_week_data);
+    setChartData(week_data);
+    console.log('retrieved ' + JSON.stringify(week_data));
   };
 
   const ItemView = ({ item }) => {
@@ -77,7 +79,7 @@ export default function TabStatsScreen() {
           fontSize: 20,
           padding: 10,
         }}>
-        {Object.keys(item)[0]} : {Object.values(item)[0]}
+        {item.label} : {item.value}
       </Text>
     );
   };
@@ -103,9 +105,10 @@ export default function TabStatsScreen() {
       <LineChart
         data={chartData}
         spacing={20}
-        isAnimated
         yAxisOffset={25}
-        animateOnDataChange
+        // isAnimated
+        // animateOnDataChange
+        // renderDataPointsAfterAnimationEnds
         animationDuration={1000}
         onDataChangeAnimationDuration={300}
         lineGradient

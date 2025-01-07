@@ -13,7 +13,7 @@ import * as SecureStore from 'expo-secure-store';
 async function save(adate : Date, value) {
   let key : string = adate.toDateString().replace(/\s/g, "_");
   await SecureStore.setItemAsync(key, value.toString());
-  console.log('saved ' + key + ' ' + value.toString());
+  // console.log('saved ' + key + ' ' + value.toString());
 }
 
 async function getValueFor(adate) {

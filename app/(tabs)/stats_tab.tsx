@@ -61,24 +61,24 @@ async function getValuesForRange(startDate: Date, endDate : Date) {
   return data;
 }
 
+type LineChartData = { label: number; value: number };
 
 export default function TabStatsScreen() {
-  const constChartData = [
-    {value: 35.28},
-    {value: 36.95},
-    {value: 37.36},
-    {value: 36.38},
-    { value: 36.89}
-  ];
-  
+  let localChartData = [{label: new Date().getDay(), value: 25}];
+
   const [refreshing, setRefreshing] = useState(true);
-  const [chartData, setChartData] = useState(constChartData);
+  const [chartData, setChartData] = useState<LineChartData[]>([]);
   const [sliderValue, setSliderValue] = useState(0);
   const [date, setDate] = useState(new Date());
 
+  // [] means run once when the app renders for the first time
   useEffect(() => {
     getLastWeek();
   }, []);
+
+  useEffect(() => {
+    localChartData = [...chartData];
+  }, [chartData]);
 
   const getLastWeek = async () => {
     let now : Date = new Date();
@@ -111,25 +111,24 @@ export default function TabStatsScreen() {
     showMode('date');
   };
 
-  const handleNumberChange = (text) => {
-    setSliderValue(text);
-    // let currentpoint = chartData.find((datapoint) => datapoint?.label === date.getDate());
-    // currentpoint.value = text.toString();
-    let currentpointidx = chartData.findIndex((datapoint) => datapoint?.label === date.getDate());
-    if (currentpointidx >= 0) {
-      chartData[currentpointidx].value = text.toString();
+  const handleNumberChange = (number) => {
+    setSliderValue(number.toString());
+    localChartData = [...chartData]
+    const pindex = localChartData.findIndex(p => p.label === date.getDate());
+    if (pindex !== -1) {
+      localChartData[pindex].value = number;
     } else {
-      chartData.push({label: date.getDate(), value: text.toString()});
+      localChartData = [...chartData, { label : date.getDate(), value : number }]  
     }
-    setChartData(chartData);
-    save(date, text);
+    setChartData(localChartData);
+    save(date, number);
     getValueFor(date);
   };
 
   const debugChart = () => {
     console.log(JSON.stringify(chartData))
-    chartData[0].value = 25 + 10*Math.random();
-    constChartData[0].value = 25 + 10*Math.random();
+    localChartData[0].value = 25 + 10*Math.random();
+    setChartData(localChartData);
   };
 
   return (
@@ -138,28 +137,22 @@ export default function TabStatsScreen() {
       {refreshing ? <ActivityIndicator /> : null}
       <RefreshControl refreshing={refreshing} onRefresh={getLastWeek} />
       <LineChart
-          thickness={3}
-          color="#07BAD1"
-          maxValue={40}
-          noOfSections={3}
-          animateOnDataChange
-          animationDuration={1000}
-          onDataChangeAnimationDuration={300}
-          areaChart
-          yAxisTextStyle={{color: 'lightgray'}}
-          data={chartData}
-          hideDataPoints
-          startFillColor={'rgb(84,219,234)'}
-          endFillColor={'rgb(84,219,234)'}
-          startOpacity={0.4}
-          endOpacity={0.1}
-          spacing={22}
-          backgroundColor="#414141"
-          rulesColor="gray"
-          rulesType="solid"
-          initialSpacing={10}
-          yAxisColor="lightgray"
-          xAxisColor="lightgray"
+        spacing={20}
+        yAxisOffset={25}
+        noOfSections={3}
+        areaChart
+        // isAnimated
+        animateOnDataChange
+        animationDuration={1000}
+        onDataChangeAnimationDuration={300}
+        // renderDataPointsAfterAnimationEnds
+        data={chartData}
+        focusEnabled
+        onFocus={() => {
+          console.log('pressssssssssss');
+          debugChart();
+          setChartData(chartData);
+        }}
       />
       <SliderText
         minimumTrackTintColor="#000"
@@ -177,8 +170,8 @@ export default function TabStatsScreen() {
         title='do something'
         onPress={() => {
           console.log('pressssssssssss');
-          constChartData[0].value = 15 + 20*Math.random();
-          setChartData(constChartData);
+          localChartData[0].value = 25 + 10*Math.random();
+          setChartData(localChartData);
         }}
       />
       <SafeAreaView>

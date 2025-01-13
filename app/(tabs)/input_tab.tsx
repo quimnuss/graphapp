@@ -7,87 +7,153 @@ import {DateTimePickerAndroid, DateTimePicker} from '@react-native-community/dat
 
 import Slider from '@react-native-community/slider';
 import SliderText from 'react-native-slider-text';
-
-import * as SecureStore from 'expo-secure-store';
-
-async function save(adate : Date, value) {
-  let key : string = adate.toDateString().replace(/\s/g, "_");
-  await SecureStore.setItemAsync(key, value.toString());
-  // console.log('saved ' + key + ' ' + value.toString());
-}
-
-async function getValueFor(adate) {
-  let key : string = adate.toDateString().replace(/\s/g, "_");
-  let result = await SecureStore.getItemAsync(key);
-  let anumber = result?.toString()
-  return result !== null ? anumber : "?";
-}
+import { LineChart } from "react-native-gifted-charts"
 
 
 export default function TabTwoScreen() {
-  const [sliderValue, setSliderValue] = useState(0);
-
-  const [date, setDate] = useState(new Date());
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate;
-    setDate(currentDate);
-    let value = getValueFor(selectedDate);
-    setSliderValue(value);
+  const [currentData, setCurrentData] = useState(latestData);
+  const lcomp = (v) => (
+    <Text style={{ width: 50, color: "white", fontWeight: "bold" }}>{v}</Text>
+  );
+  const dPoint = () => {
+    return (
+      <View
+        style={{
+          width: 14,
+          height: 14,
+          backgroundColor: 'white',
+          borderWidth: 3,
+          borderRadius: 7,
+          borderColor: '#07BAD1',
+        }}
+      />
+    );
   };
+  const latestData = [
+    {
+      value: 100,
+      labelComponent: () => lcomp('22 Nov'),
 
-  const showMode = (currentMode) => {
-    DateTimePickerAndroid.open({
-      value: date,
-      onChange,
-      mode: currentMode,
-      is24Hour: true,
-    });
-  };
+    },
+    {
+      value: 120,
+      hideDataPoint: true,
+    },
+    {
+      value: 210,
 
-  const showDatepicker = () => {
-    showMode('date');
-  };
+    },
+    {
+      value: 250,
+      hideDataPoint: true,
+    },
+    {
+      value: 320,
+      labelComponent: () => lcomp('24 Nov'),
 
-  const handleNumberChange = (text) => {
-    setSliderValue(text);
-    save(date, text);
-    getValueFor(date);
-  };
+    },
+    {
+      value: 310,
+      hideDataPoint: true,
+    },
+    {
+      value: 270,
 
+    },
+    {
+      value: 240,
+      hideDataPoint: true,
+    },
+    {
+      value: 130,
+      labelComponent: () => lcomp('26 Nov'),
+
+    },
+    {
+      value: 120,
+      hideDataPoint: true,
+    },
+    {
+      value: 100,
+
+    },
+    {
+      value: 210,
+      hideDataPoint: true,
+    },
+    {
+      value: 270,
+      labelComponent: () => lcomp('28 Nov'),
+
+    },
+    {
+      value: 240,
+      hideDataPoint: true,
+    },
+    {
+      value: 120,
+      hideDataPoint: true,
+    },
+    {
+      value: 100,
+
+    },
+    {
+      value: 210,
+      labelComponent: () => lcomp('28 Nov'),
+
+    },
+    {
+      value: 20,
+      hideDataPoint: true,
+    },
+    {
+      value: 100,
+
+    },
+  ];
 
   return (
-    <View style={styles.container}>
+    <View
+    style={{
+      marginVertical: 100,
+      paddingVertical: 50,
+      backgroundColor: '#414141',
+    }}>
       <Text style={styles.title}>Input tab</Text>
-      {/* <Slider
-        style={{width: 200, height: 40}}
-        minimumValue={10}
-        maximumValue={40}
-        step={1}
-        tapToSeek
-        minimumTrackTintColor="#FFFFFF"
-        maximumTrackTintColor="#000000"
-      /> */}
-
-      <SliderText
-        minimumTrackTintColor="#000"
-        thumbTintColor="#000"
-        maximumTrackTintColor="#099"
-        minimumValue={36.00}
-        maximumValue={38.00}
-        stepValue={0.01}
-        minimumValueLabel="36"
-        maximumValueLabel="38"
-        onValueChange={(id) => handleNumberChange(id)}
-        sliderValue={sliderValue}
+      <LineChart
+        // isAnimated
+        thickness={3}
+        color="#07BAD1"
+        maxValue={600}
+        noOfSections={3}
+        animateOnDataChange
+        animationDuration={1000}
+        onDataChangeAnimationDuration={300}
+        areaChart
+        yAxisTextStyle={{color: 'lightgray'}}
+        data={currentData}
+        hideDataPoints
+        startFillColor={'rgb(84,219,234)'}
+        endFillColor={'rgb(84,219,234)'}
+        startOpacity={0.4}
+        endOpacity={0.1}
+        spacing={22}
+        backgroundColor="#414141"
+        rulesColor="gray"
+        rulesType="solid"
+        initialSpacing={10}
+        yAxisColor="lightgray"
+        xAxisColor="lightgray"
       />
-      <SafeAreaView>
-        <Text>{sliderValue} ºC</Text>
-        <Button onPress={showDatepicker} title={date.toLocaleDateString()} />
-      </SafeAreaView>
-
-      <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <EditScreenInfo path="app/(tabs)/input_tab.tsx" />
+      <Button
+        title='do something'
+        onPress={() => {
+          console.log('pressssssssssss');
+          latestData[0].value = 25 + 200*Math.random();
+          setCurrentData(latestData);
+        }}
+      />
     </View>
   );
 }

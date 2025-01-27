@@ -8,6 +8,7 @@ import {
   FlatList,
   Button,
 } from 'react-native';
+
 import SliderText from 'react-native-slider-text';
 
 import { DateTimePickerAndroid } from '@react-native-community/datetimepicker';
